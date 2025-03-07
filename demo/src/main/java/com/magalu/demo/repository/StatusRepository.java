@@ -1,4 +1,7 @@
 package com.magalu.demo.repository;
 
-public class StatusRepository {
+import com.magalu.demo.entity.Status;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface StatusRepository extends JpaRepository<Status, Long> {
 }
