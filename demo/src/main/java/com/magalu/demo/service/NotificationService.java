@@ -5,8 +5,12 @@ import com.magalu.demo.entity.Notification;
 import com.magalu.demo.entity.Status;
 import com.magalu.demo.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 public class NotificationService {
@@ -32,5 +36,26 @@ public class NotificationService {
             notification.get().setStatus(Status.Values.CANCELLER.toStatus());
             notificationRepository.save(notification.get());
         }
+    }
+
+    public void checkAndSend(LocalDateTime dateTime){
+        var notificatons = notificationRepository.findByStatusInAndDateTimeBefore(List.of(
+                Status.Values.PENDING.toStatus(),
+                Status.Values.ERROR.toStatus()
+        ), dateTime);
+
+        notificatons.forEach(sendNotification());
+    }
+
+    @Transactional
+    private Consumer<Notification> sendNotification() {
+        return n -> {
+
+            //TODO Realiza a logica der envio
+
+            n.setStatus(Status.Values.SUCCESS.toStatus());
+            notificationRepository.save(n);
+
+        };
     }
 }
